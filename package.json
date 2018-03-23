@@ -1,0 +1,22 @@
+{
+  "name": "movie-admin",
+  "version": "1.0.0",
+  "description": "基于Koa、React、antd、开发的电影预告网站后台",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "node server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lhz960904/movie-admin.git"
+  },
+  "author": "lihaozecq",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lhz960904/movie-admin/issues"
+  },
+  "homepage": "https://github.com/lhz960904/movie-admin#readme",
+  "dependencies": {
+    "koa": "^2.5.0"
+  }
+}
