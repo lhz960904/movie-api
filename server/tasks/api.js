@@ -14,20 +14,22 @@ async function fetchMovie(item) {
     $or: [
       {summary: {$exists: false}},
       {summary: null},
+      {summary: ''},
       {title: ''},
-      {year: {$exists: false}},
-      {summary: ''}
+      {author: ''},
+      {duration: ''}
     ]
   })
   for (let i = 0; i < movies.length; i++) {
     let movie = movies[i]
     let movieData = await fetchMovie(movie)
     if (movieData) {
+      movie.author = movieData.author && movieData.author[0].name || ''
+      movie.title = movieData.alt_title || ''
       movie.summary = movieData.summary || ''
-      movie.title = movieData.title || ''
       if (movieData.attrs) {
+        movie.duration = movieData.attrs.movie_duration || ''
         movie.movieTypes = movieData.attrs.movie_type || []
-        movie.year = movieData.attrs.year[0] || 0000
         for (let j = 0; j < movie.movieTypes.length; j++) {
           let item = movie.movieTypes[j]
           let cat = await Category.findOne({
@@ -71,11 +73,6 @@ async function fetchMovie(item) {
         })
         movie.pubdate = pubdates
       }
-      movie.tags = []
-      
-      movieData.tags.forEach(tag => {
-        movie.tags.push(tag.name)
-      })
       await movie.save()
     }
   }

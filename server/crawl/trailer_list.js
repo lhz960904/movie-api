@@ -1,32 +1,32 @@
 const puppeteer = require('puppeteer')
 
-const url = 'https://movie.douban.com/tag/#/?sort=R&range=0,10&tags=%E7%94%B5%E5%BD%B1'
+const nowUrl = 'https://movie.douban.com/cinema/nowplaying/beijing/'
+const comUrl = 'https://movie.douban.com/coming'
 
 const sleep = time => new Promise((resolve) => {
   setTimeout(resolve, time)
 })
 
 ;(async () => {
+  console.log('正在爬取')
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
-  await page.goto(url, {
+  await page.goto(nowUrl, {
     waitUntil: 'networkidle2'
   })
   await page.waitForSelector('.more')
-  for (let i = 0; i < 5; i++) {
-    await sleep(3000)
-    await page.click('.more')
-  }
   await sleep(3000)
-  const result = await page.evaluate(() => {
+  await page.click('.more')
+  await sleep(3000)
+  let result = await page.evaluate(() => {
     const $ = window.$
-    const items = $('.list-wp a')
+    const items = $('#nowplaying .list-item')
     let data = []
     items.each((index, item) => {
       const it = $(item)
-      const rate = it.find('.rate').text()
-      const title = it.find('.title').text()
-      const doubanId = it.find('div').data('id')
+      const doubanId = it.data('subject')
+      const rate = it.data('score')
+      const title = it.data('title')
       const poster = it.find('img').attr('src').replace('s_ratio', 'l_ratio')
       data.push({
         rate,
@@ -37,6 +37,41 @@ const sleep = time => new Promise((resolve) => {
     })
     return data
   })
+  await page.goto(comUrl, {
+    waitUntil: 'networkidle2'
+  })  
+  await sleep(3000)
+  let links = await page.evaluate(() => {
+    const arr = []
+    const $ = window.$
+    const items = $('.coming_list tbody').find('a')
+    items.each((index, item) => {
+      arr.push($(item).attr('href'))
+    })
+    return arr
+  })
+  console.log(links.length)
+  for (let i = 0; i < links.length; i++) {
+    await page.goto(links[i], {
+      waitUntil: 'networkidle2'
+    })  
+    let ret = await page.evaluate(() => {
+      const $ = window.$
+      var reg = new RegExp('/subject/([0-9]*)/')
+      const doubanId = (location.href.match(reg))[1]
+      const title = $('#content').find('h1 span').eq(0).text()
+      const rate = 0
+      const poster = $('.nbgnbg').find('img').attr('src')
+      return {
+        doubanId,
+        title,
+        rate,
+        poster
+      }
+    })
+    console.log(ret)
+    result.push(ret)
+  }
   await browser.close()
   process.send({result})
   process.exit(0)

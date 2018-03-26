@@ -8,7 +8,8 @@ const Category = mongoose.model('Category')
   let movies = await Movie.find({
     $or: [
       {video: {$exists: false}},
-      {video: null}
+      {video: null},
+      {casts: []},
     ]
   })
   const script = resolve(__dirname, '../crawl/trailer_video')
@@ -35,7 +36,8 @@ const Category = mongoose.model('Category')
     })
     if (data.video) {
       movie.video = data.video
-      movie.cover = data.cover
+      movie.casts = data.casts
+      movie.images = data.images
       await movie.save()
     } else {
       await movie.remove()
