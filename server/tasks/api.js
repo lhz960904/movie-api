@@ -15,9 +15,7 @@ async function fetchMovie(item) {
       {summary: {$exists: false}},
       {summary: null},
       {summary: ''},
-      {title: ''},
-      {author: ''},
-      {duration: ''}
+      {title: ''}
     ]
   })
   for (let i = 0; i < movies.length; i++) {
@@ -25,7 +23,7 @@ async function fetchMovie(item) {
     let movieData = await fetchMovie(movie)
     if (movieData) {
       movie.author = movieData.author && movieData.author[0].name || ''
-      movie.title = movieData.alt_title || ''
+      movie.title = movieData.alt_title || movieData.title || ''
       movie.summary = movieData.summary || ''
       if (movieData.attrs) {
         movie.duration = movieData.attrs.movie_duration || ''

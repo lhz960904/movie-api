@@ -1,7 +1,21 @@
-const mongoose = require('mongoose')
-
 const Koa = require('koa')
-const { connect, initSchemas, initAdmin } = require('./database/init')
+const mongoose = require('mongoose')
+const { resolve } = require('path')
+const { connect, initSchemas } = require('./database/init')
+const R = require('ramda')
+const MIDDLEWARES = ['router']
+
+const useMiddlewares = (app) => {
+  R.map(
+    R.compose(
+      R.forEachObjIndexed(
+        initWith => initWith(app)
+      ),
+      require,
+      name => resolve(__dirname, `./middlewares/${name}`)
+    )
+  )(MIDDLEWARES)
+}
 
 ;(async () => {
   await connect()
@@ -10,12 +24,7 @@ const { connect, initSchemas, initAdmin } = require('./database/init')
   // require('./tasks/api')
   // require('./tasks/video')
   // require('./tasks/qiniu')
-  // initAdmin()
+  const app = new Koa()
+  await useMiddlewares(app)
+  app.listen(4000)
 })()
-
-const app = new Koa()
-
-app.use(async (ctx, next) => {
-  ctx.body = 'hello Admin!'
-})
-app.listen(4000)

@@ -67,7 +67,7 @@ userSchema.virtual('isLocked').get(function()  {
   return !!(this.lockUntil && this.lockUntil > Date.now())
 })
 
-userSchema,methods = {
+userSchema.methods = {
   comparePassword: function(_password, password) {
     return new Promise((resolve, reject) => {
       bcrypt.compare(_password, password, (err, isMatch) => {
