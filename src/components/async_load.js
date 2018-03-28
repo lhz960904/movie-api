@@ -1,12 +1,14 @@
 import React from 'react'
+import Layout from '../components/layout'
+import Loading from './loading'
 
-export default (loadComponent, placeholder = '正在加载') => {
+export default (loadComponent, ) => {
   return class AsyncComponent extends React.Component {
     unmount = false
     constructor(props) {
       super(props)
       this.state = {
-        Child: null
+        Child: null,
       }
     }
 
@@ -21,13 +23,17 @@ export default (loadComponent, placeholder = '正在加载') => {
     componentWillUnmount() {
       this.unmount = true
     }
-    
+
     render() {
       const { Child } = this.state
       return (
-        Child
-         ? <Child {...this.props} />
-         : placeholder
+        <Layout>
+          {
+            Child
+              ? <Child {...this.props} />
+              : <Loading />
+          }
+        </Layout> 
       )
     }
   }

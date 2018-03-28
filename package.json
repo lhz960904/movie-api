@@ -19,6 +19,7 @@
   "homepage": "https://github.com/lhz960904/movie-admin#readme",
   "dependencies": {
     "antd": "^3.3.3",
+    "axios": "^0.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-react": "^6.24.1",
@@ -29,6 +30,7 @@
     "koa-static": "^4.0.2",
     "koa-views": "^6.1.4",
     "lodash": "^4.17.5",
+    "moment": "^2.21.0",
     "mongoose": "^5.0.11",
     "nanoid": "^1.0.2",
     "parcel-bundler": "^1.6.2",

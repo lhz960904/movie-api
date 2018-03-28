@@ -1,13 +1,13 @@
 import React from 'react'
 
-export default class Home extends React.Component {
+export default class User extends React.Component {
   constructor(props) {
     super(props)
   }
 
   render() {
     return (
-      <h1>登陆页</h1>
+      <h1>user</h1>
     )
   }
 }
