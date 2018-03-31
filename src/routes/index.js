@@ -1,4 +1,5 @@
 import AC from '../components/async_load'
+import Login from '../views/login'
 
 export default [
   {
@@ -19,6 +20,6 @@ export default [
   {
     name: '登陆页',
     path: '/login',
-    component: AC(() => import('../views/login'))
+    component: Login
   },
 ]

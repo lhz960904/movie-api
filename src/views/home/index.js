@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import moment from 'moment'
-import { Table, Divider } from 'antd'
+import { Table, message } from 'antd'
 const ERROK = 0
 const PREFIX = 'http://m.movie.kyriel.cn/'
 
@@ -9,7 +9,8 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      movies: []
+      movies: [],
+      sortedInfo: null
     }
   }
 
@@ -19,13 +20,15 @@ export default class Home extends React.Component {
       this.setState({
         movies: res.data.movies 
       })
+    } else {
+      window.location.href = `/login`
     }
   }
 
   getAllMovies() {
     return new Promise((resolve, reject) => {
       axios({
-        url: '/movies'
+        url: '/api/admin/get_all_movies'
       }).then((res) => {
         resolve(res.data)
       }).catch((err) => {
@@ -34,8 +37,38 @@ export default class Home extends React.Component {
     })
   }
 
+  handleClick = (id) => {
+    const idx = this.state.movies.findIndex((item) => item._id == id)
+    let movies = this.state.movies
+    axios({
+      url: `/api/admin/delete_movie/${id}`,
+      method: 'delete'
+    }).then((res) => {
+      res = res.data
+      if (res.code == 0) {
+        movies.splice(idx, 1)
+        this.setState({
+          movies,
+        })
+        message.success(res.errmsg);
+      } else {
+        message.error(res.errmsg);
+      }
+    }).catch((err) => {
+      message.error('删除失败');
+    })
+  }
+  
+  handleChange = (pagination, filters, sorter) => {
+    this.setState({
+      sortedInfo: sorter,
+    });
+  }
+
   render() {
     let movies = []
+    let { sortedInfo } = this.state
+    sortedInfo = sortedInfo || {}
     this.state.movies.forEach((item, index) => {
       const { title, rate, doubanId, movieTypes, summary, pubdate, _id} = item
       movies.push({
@@ -57,11 +90,13 @@ export default class Home extends React.Component {
       title: '名字',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <a href={`${PREFIX}${record._id}`}>{text}</a>,
+      render: (text, record) => <a href={`${PREFIX}${record.id}`}  target="_blank">{text}</a>,
     },{
       title: '评分',
       dataIndex: 'rate',
-      key: 'rate'
+      key: 'rate',
+      sorter: (a, b) => a.rate - b.rate,
+      sortOrder: sortedInfo.columnKey === 'rate' && sortedInfo.order
     },{
       title: '豆瓣Id',
       dataIndex: 'doubanId',
@@ -80,10 +115,15 @@ export default class Home extends React.Component {
       dataIndex: 'pubdate',
       key: 'pubdate',
       render: text => moment(text).format('YYYY-MM-DD')
+    },{
+      title: '操作',
+      dataIndex: 'delete',
+      key: 'delete',
+      render: (text, record) => <a onClick={this.handleClick.bind(this,record.id)}>删除</a>
     }]
     return (
       <div>
-        <Table columns={columns} dataSource={movies} />
+        <Table columns={columns} dataSource={movies} onChange={this.handleChange}/>
       </div>
     )
   }

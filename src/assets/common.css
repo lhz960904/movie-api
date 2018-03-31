@@ -57,4 +57,24 @@ table {
 	font-size: 25px;
 	transition: all 0.5s;
 }
-    
+
+.form-wrapper {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border: 1px solid #ebedf0;
+	padding: 40px;
+}
+
+.login-form {
+	width: 300px;
+}
+.login-form-button {
+	width: 100%;
+}
+
+.form-wrapper  h1{
+	text-align: center;
+  margin-bottom: 20px;
+}

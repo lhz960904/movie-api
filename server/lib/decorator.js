@@ -1,3 +1,6 @@
+import { request } from 'http';
+
+const R = require('ramda')
 const _ = require('lodash')
 const glob = require('glob')
 const { resolve } = require('path')
@@ -66,4 +69,64 @@ export const use = path => router({
 export const all = path => router({
   method: 'all',
   path: path
+})
+const changeToArr = R.unless(
+  R.is(isArray),
+  R.of
+)
+
+const decorate = (args, middleware) => {
+  let [target, key, desc] = args
+  target[key] = isArray(target[key])
+  target[key].unshift(middleware)
+  return desc
+}
+
+const covert = middleware => (...args) => decorate(args, middleware)
+
+export const auth = covert(async (ctx, next) => {
+  if (!ctx.session.user) {
+    return (
+      ctx.body = {
+        code: 401,
+        errmsg: '登录信息失效!'
+      }
+    )
+  }
+  await next()
+})
+
+export const admin = roleExpected => covert(async (ctx, next) => {
+  const { role } = ctx.session.user
+  if (!role || role !== roleExpected) {
+    return (
+      ctx.body = {
+        code: 403,
+        errmsg: '没有权限!'
+      }
+    )
+  }
+  await next()
+})
+
+export const required = rules => covert(async (ctx, next) => {
+  let errors = []
+  const checkRules = R.forEachObjIndexed(
+    (val, key) => {
+      errors = R.filter(i => {
+        const obj = ctx.request[key] || ctx[key]
+        return !R.has(i)(obj)
+      })(val)
+    }
+  )
+  checkRules(rules)
+  if (errors.length) {
+    return(
+      ctx.body = {
+        code: 412,
+        errmsg: `${errors.join(',')} is required`
+      }
+    )
+  }
+  await next()
 })

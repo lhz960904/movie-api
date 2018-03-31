@@ -7,7 +7,6 @@ const LOCK_TIME = 2 * 60 * 60 * 1000
 
 const userSchema = new Schema({
   username: {
-    unique: true,
     type: String,
     required: true
   },
@@ -17,12 +16,15 @@ const userSchema = new Schema({
     required: true,
   },
   password: {
-    unique: true,
     type: String
   },
   headImg: {
     type: String,
     default: ''
+  },
+  role: {
+    type: String,
+    default: 'user'
   },
   lockUntil: Number,
   loginAttempts: {

@@ -11,6 +11,10 @@ const movieSchema = new Schema({
     type: Number,
     default: 0
   },
+  isPlay: {
+    type: Number,
+    default: 1
+  },
   author: String,
   title: String,
   poster: String,

@@ -1,29 +1,30 @@
-const { get, post, put, del, controller } = require('../lib/decorator')
+const { get, post, put, del, controller, required } = require('../lib/decorator')
 const {
   getAllMovies,
-  getMovieDetail
+  getMovieDetail,
+  getRelativeMovies
 } = require('../service/movie')
 
-@controller('movies')
+@controller('api/client/movie')
 export class movieController {
-  @get('/')
+  @get('/get_all') // 获取符合条件的电影条数
+  @required({
+    query: ['page_size', 'page']
+  })
   async getAll (ctx, next) {
-    const { type } = ctx.query
-    const movies = await getAllMovies(type)
-
+    const { category, page_size, page, type } = ctx.query
+    const data = await getAllMovies(category, page_size, page, type)
     ctx.body = {
       code: 0,
       errmsg: '',
-      data: {
-        movies
-      }
+      data
     }
   }
-  @get('/:id')
-  async getMovie (ctx, next) {
-    const id = ctx.params.id
+
+  @get('/get_detail/:id') // 通过id获取单条电影信息
+  async getDetail (ctx, next) {
+    const { id } = ctx.params
     const movie = await getMovieDetail(id)
-    // const relative_moives = await getRelativeMovies(movie)
     ctx.body = {
       code: 0,
       errmsg: '',
@@ -32,5 +33,17 @@ export class movieController {
       }
     }
   }
-}
 
+  @get('/get_relative/:id') // 通过id获取与该电影相似的条目信息
+  async getRelative (ctx, next) {
+    const { id } = ctx.params
+    const movies = await getRelativeMovies(id)
+    ctx.body = {
+      code: 0,
+      errmsg: '',
+      data: {
+        movies
+      }
+    }
+  }
+}
