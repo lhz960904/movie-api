@@ -123,3 +123,16 @@ export const getLineData = async () => {
     valueList
   }
 }
+
+/**
+ * 搜索电影
+ * @param {String} q 关键字
+ */
+export const searchMovie = async (q) => {
+  const movies = await Movie.find({
+    $or: [
+      { title: { '$regex': q, $options: '$i'}}
+    ]
+  })
+  return movies
+}

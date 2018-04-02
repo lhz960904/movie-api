@@ -2,7 +2,8 @@ const { get, post, put, del, controller, required } = require('../lib/decorator'
 const {
   getAllMovies,
   getMovieDetail,
-  getRelativeMovies
+  getRelativeMovies,
+  searchMovie
 } = require('../service/movie')
 
 @controller('api/client/movie')
@@ -38,6 +39,22 @@ export class movieController {
   async getRelative (ctx, next) {
     const { id } = ctx.params
     const movies = await getRelativeMovies(id)
+    ctx.body = {
+      code: 0,
+      errmsg: '',
+      data: {
+        movies
+      }
+    }
+  }
+
+  @get('/search') // 搜索电影
+  @required({
+    query: ['q']
+  })
+  async getRelative(ctx, next) {
+    const { q } = ctx.query
+    const movies = await searchMovie(q)
     ctx.body = {
       code: 0,
       errmsg: '',

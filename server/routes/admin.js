@@ -21,8 +21,6 @@ export class adminController {
   @admin('admin') //检查是否是管理员
   async getAllMovies(ctx, next) {
     const data = await getAllMovies()
-    console.log('查电影')
-    console.log(data.length)
     ctx.body = {
       code: 0,
       errmsg: '',
