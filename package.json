@@ -5,7 +5,7 @@
   "main": "server/index.js",
   "scripts": {
     "dev": "set NODE_ENV=development && nodemon ./start.js",
-    "build": "parcel build src/index.html -d dist --public-url /"
+    "build": "set NODE_ENV=production && parcel build src/index.html -d dist --public-url /"
   },
   "repository": {
     "type": "git",
