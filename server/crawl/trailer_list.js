@@ -9,7 +9,9 @@ const sleep = time => new Promise((resolve) => {
 
 ;(async () => {
   console.log('正在爬取')
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox']
+  })
   const page = await browser.newPage()
   await page.goto(nowUrl, {
     waitUntil: 'networkidle2'

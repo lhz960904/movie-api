@@ -8,7 +8,9 @@ const sleep = time => new Promise((resolve) => {
 
 process.on('message', async movies => {
   console.log('开始爬取页面...')
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox']
+  })
   const page = await browser.newPage()
   for (let i = 0; i < movies.length; i++) {
     let doubanId = movies[i].doubanId
