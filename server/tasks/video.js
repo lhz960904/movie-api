@@ -50,7 +50,7 @@ const Category = mongoose.model('Category')
         if (cat) {
           let idx = cat.movies.indexOf(movie._id)
           if (idx > -1) {
-            cat.movies = cat.movies.splice(idx, 1)
+            cat.movies.splice(idx, 1)
           }
           await cat.save()
         }

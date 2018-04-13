@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
+const Category = mongoose.model('Category')
 const moment = require('moment')
 /**
  * 获取符合条件的电影条数
@@ -79,12 +80,21 @@ export const deleteMoive = async (id) => {
  * @param {String} type 电影类型
  */
 export const getTypeCount = async (type) => {
-  const count = await Movie.find({
-    movieTypes: {
-      $in: [type]
-    }
-  }).count()
-  return count
+  let keys = []
+  let values = []
+  const cats = await Category.find({})
+  for (let i = 0; i < cats.length; i++) {
+    const item = cats[i]
+    keys.push(item.name)
+    values.push({
+      value: item.movies.length,
+      name: item.name
+    })
+  }
+  return {
+    keys,
+    values
+  }
 }
 
 export const getLineData = async () => {

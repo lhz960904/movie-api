@@ -80,21 +80,12 @@ export class adminController {
   async getPie(ctx, next) {
     let values = []
     let keys = []
-    const movieTypes = await getMoiveTypes()
-    for (let i = 0; i < movieTypes.length; i++) {
-      const type = movieTypes[i].name
-      const count = await getTypeCount(type)
-      values.push({
-        value: count, 
-        name: type
-      })
-      keys.push(type)
-    }
+    const data = await getTypeCount()
     ctx.body = {
       code: 0,
       data: {
-        keysArr: keys,
-        valuesArr: values
+        keysArr: data.keys,
+        valuesArr: data.values
       },
       errmsg: ''
     }

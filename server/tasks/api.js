@@ -23,7 +23,7 @@ async function fetchMovie(item) {
     let movieData = await fetchMovie(movie)
     if (movieData) {
       movie.author = movieData.author && movieData.author[0].name || ''
-      movie.title = movieData.alt_title || movieData.title || ''
+      movie.en_title = movieData.title || ''
       movie.summary = movieData.summary || ''
       if (movieData.attrs) {
         movie.duration = movieData.attrs.movie_duration || ''
@@ -39,7 +39,7 @@ async function fetchMovie(item) {
               movies: [movie._id]
             })
           } else {
-            if (cat.movies.indexOf(movie._id) === -1) {
+            if (cat.movies.indexOf(movie._id) == -1) {
               cat.movies.push(movie._id)
             }
           }
@@ -48,7 +48,7 @@ async function fetchMovie(item) {
           if (!movie.category) {
             movie.category.push(cat._id)
           } else {
-            if (movie.category.indexOf(cat._id) === -1) {
+            if (movie.category.indexOf(cat._id) == -1) {
               movie.category.push(cat._id)
             }
           }
@@ -70,6 +70,10 @@ async function fetchMovie(item) {
           }
         })
         movie.pubdate = pubdates
+        let compare_date = new Date(movie.pubdate[movie.pubdate.length - 1].date).getTime()
+        if (compare_date > new Date().getTime()) {
+          movie.isPlay = 0
+        }
       }
       await movie.save()
     }

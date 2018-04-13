@@ -17,6 +17,7 @@ const movieSchema = new Schema({
   },
   author: String,
   title: String,
+  en_title: String,
   poster: String,
   posterKey: String,
   summary: String,
