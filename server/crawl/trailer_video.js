@@ -42,10 +42,12 @@ process.on('message', async movies => {
       const it = $('.related-pic-video')
       if (it && it.length > 0) {
         const link = it.attr('href')
+        const cover = it.find('img').attr('src')
         return {
           link,
           images,
-          casts
+          casts,
+          cover
         }
       }
     })
@@ -66,6 +68,7 @@ process.on('message', async movies => {
     const data = {
       video,
       doubanId,
+      cover: result && result.cover,
       images: result && result.images,
       casts: result && result.casts
     }

@@ -38,6 +38,7 @@ const Category = mongoose.model('Category')
       movie.video = data.video
       movie.casts = data.casts
       movie.images = data.images
+      movie.cover = data.cover
       await movie.save()
     } else {
       await movie.remove()

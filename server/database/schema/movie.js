@@ -30,6 +30,8 @@ const movieSchema = new Schema({
   duration: String,
   video: String,
   videoKey: String,
+  cover: String,
+  coverKey: String,
   movieTypes: [String],
   category: [{
     type: ObjectId,

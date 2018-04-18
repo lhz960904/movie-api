@@ -39,6 +39,7 @@ const uploadToQiniu = async (url, key) => {
       try { 
         let videoData = await uploadToQiniu(movie.video, nanoid() + '.mp4')
         let posterData = await uploadToQiniu(movie.poster, nanoid() + '.jpg')
+        let coverData = await uploadToQiniu(movie.cover, nanoid() + '.jpg')
         const arr = []
         for (let i = 0; i < movie.images.length; i++) {
           let { key } = await uploadToQiniu(movie.images[i], nanoid() + '.jpg')
@@ -60,7 +61,9 @@ const uploadToQiniu = async (url, key) => {
         if (posterData.key) {
           movie.posterKey = posterData.key
         }
-        
+        if (coverData.key) {
+          movie.coverKey = coverData.key
+        }
         await movie.save()
       } catch (error) {
         console.log(error)
