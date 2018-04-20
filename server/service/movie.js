@@ -53,13 +53,17 @@ export const getMovieDetail = async (id) => {
  * @param {String} id 电影id
  */
 export const getRelativeMovies = async (id) => {
-  const movie = await Movie.findOne({ _id: id })
-  const movies = await Movie.find({
-    movieTypes: {
-      $in: movie.movieTypes
-    }
-  })
-  return movies
+  try {
+    const movie = await Movie.findOne({ _id: id })
+    const movies = await Movie.find({
+      movieTypes: {
+        $in: movie.movieTypes
+      }
+    })
+    return movies.slice(0, 6)
+  } catch (error) {
+    return {}
+  }
 }
 
 /**
@@ -155,8 +159,6 @@ export const searchMovie = async (q) => {
 
 export const refreshMovies = async (q) => {
   const movies = await Movie.find({})
-  let j = 1
-  let z = 1
   for (let i = 0; i < movies.length; i++) {
     let movie = movies[i]
     let pubdate = movie.pubdate[movie.pubdate.length - 1].date
@@ -170,6 +172,24 @@ export const refreshMovies = async (q) => {
       movie.rate = res.rating.average || 0
       await movie.save()
     }
+  }
+  return true
+}
+
+export const delMovieTypes = async () => {
+  const movies = await Movie.find({})
+  const cats = await Category.find({})
+  let idx = cats.findIndex((item) => {
+    return item.name == '剧情'
+  })
+  await cats[idx].remove()
+  for (let i = 0; i < movies.length; i++) {
+    let movie = movies[i]
+    let index = movie.movieTypes.indexOf('剧情')
+    if (index > -1) {
+      movie.movieTypes.splice(index, 1)
+    }
+    await movie.save()
   }
   return true
 }

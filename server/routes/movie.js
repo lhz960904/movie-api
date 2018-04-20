@@ -3,7 +3,8 @@ const {
   getAllMovies,
   getMovieDetail,
   getRelativeMovies,
-  searchMovie
+  searchMovie,
+  delMovieTypes
 } = require('../service/movie')
 
 @controller('api/client/movie')
@@ -69,6 +70,20 @@ export class movieController {
       errmsg: '',
       data: {
         movies
+      }
+    }
+  }
+
+  @get('/deltypes') // 通过id获取与该电影相似的条目信息
+  async delType(ctx, next) {
+    const res = await delMovieTypes()
+    if (res) {
+      ctx.body = {
+        code: 0
+      }
+    } else {
+      ctx.body = {
+        code: 3
       }
     }
   }
