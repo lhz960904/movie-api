@@ -3,7 +3,8 @@ const {
   getAllMovies,
   deleteMoive,
   getTypeCount,
-  getLineData
+  getLineData,
+  refreshMovies
 } = require('../service/movie')
 const {
   getAllUsers,
@@ -98,6 +99,14 @@ export class adminController {
       code: 0,
       data,
       errmsg: ''
+    }
+  }
+
+  @get('/refresh')
+  async refresh(ctx, next) {
+    const res = await refreshMovies()
+    ctx.body = {
+      code: 0
     }
   }
 }

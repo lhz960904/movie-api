@@ -26,11 +26,19 @@ export class movieController {
   async getDetail (ctx, next) {
     const { id } = ctx.params
     const movie = await getMovieDetail(id)
-    ctx.body = {
-      code: 0,
-      errmsg: '',
-      data: {
-        movie
+    if (!movie) {
+      ctx.body = {
+        code: 3,
+        errmsg: '',
+        data: {}
+      }
+    } else {
+      ctx.body = {
+        code: 0,
+        errmsg: '',
+        data: {
+          movie
+        }
       }
     }
   }
@@ -38,6 +46,7 @@ export class movieController {
   @get('/get_relative/:id') // 通过id获取与该电影相似的条目信息
   async getRelative (ctx, next) {
     const { id } = ctx.params
+    console.log(id)
     const movies = await getRelativeMovies(id)
     ctx.body = {
       code: 0,
@@ -52,7 +61,7 @@ export class movieController {
   @required({
     query: ['q']
   })
-  async getRelative(ctx, next) {
+  async searchMovie(ctx, next) {
     const { q } = ctx.query
     const movies = await searchMovie(q)
     ctx.body = {

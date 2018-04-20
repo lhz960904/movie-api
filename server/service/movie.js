@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category')
 const moment = require('moment')
+const rp = require('request-promise-native')
 /**
  * 获取符合条件的电影条数
  * @param {String} category 类型
@@ -39,8 +40,12 @@ export const getAllMovies = async (category, page_size, page, type) => {
  * @param {String} id 电影id
  */
 export const getMovieDetail = async (id) => {
-  const movie = await Movie.findOne({_id: id})
-  return movie
+  try {
+    const movie = await Movie.findOne({_id: id})
+    return movie
+  } catch (error) {
+    return ''
+  }
 }
 
 /**
@@ -145,4 +150,26 @@ export const searchMovie = async (q) => {
     ]
   })
   return movies
+}
+
+
+export const refreshMovies = async (q) => {
+  const movies = await Movie.find({})
+  let j = 1
+  let z = 1
+  for (let i = 0; i < movies.length; i++) {
+    let movie = movies[i]
+    let pubdate = movie.pubdate[movie.pubdate.length - 1].date
+    pubdate = new Date(pubdate).getTime()
+    const date = new Date().getTime()
+    if (date > pubdate && movie.isPlay != 1) {
+      movie.isPlay = 1
+      let url = `http://api.douban.com/v2/movie/${movie.doubanId}`
+      let res = await rp(url)
+      res = JSON.parse(res)
+      movie.rate = res.rating.average || 0
+      await movie.save()
+    }
+  }
+  return true
 }
