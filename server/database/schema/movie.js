@@ -33,6 +33,10 @@ const movieSchema = new Schema({
   cover: String,
   coverKey: String,
   movieTypes: [String],
+  hot_count: {
+    type: Number,
+    default: 0
+  },
   category: [{
     type: ObjectId,
     ref: 'Category'

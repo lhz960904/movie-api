@@ -4,7 +4,8 @@ const {
   getMovieDetail,
   getRelativeMovies,
   searchMovie,
-  delMovieTypes
+  delMovieTypes,
+  getHotKey
 } = require('../service/movie')
 
 @controller('api/client/movie')
@@ -47,7 +48,6 @@ export class movieController {
   @get('/get_relative/:id') // 通过id获取与该电影相似的条目信息
   async getRelative (ctx, next) {
     const { id } = ctx.params
-    console.log(id)
     const movies = await getRelativeMovies(id)
     ctx.body = {
       code: 0,
@@ -74,7 +74,7 @@ export class movieController {
     }
   }
 
-  @get('/deltypes') // 通过id获取与该电影相似的条目信息
+  @get('/deltypes') // 删除电影类型
   async delType(ctx, next) {
     const res = await delMovieTypes()
     if (res) {
@@ -85,6 +85,18 @@ export class movieController {
       ctx.body = {
         code: 3
       }
+    }
+  }
+
+  @get('/gethotkey')
+  async getHotkeys(ctx, next) {
+    const movies = await getHotKey()
+    ctx.body = {
+      code: 0,
+      data: {
+        movies
+      },
+      errmsg: ''
     }
   }
 }

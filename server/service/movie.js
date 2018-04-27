@@ -41,7 +41,10 @@ export const getAllMovies = async (category, page_size, page, type) => {
  */
 export const getMovieDetail = async (id) => {
   try {
-    const movie = await Movie.findOne({_id: id})
+    let movie = await Movie.findOne({_id: id})
+    movie.hot_count += 1 
+    console.log(movie.hot_count)
+    await movie.save()
     return movie
   } catch (error) {
     return ''
@@ -153,10 +156,27 @@ export const searchMovie = async (q) => {
       { title: { '$regex': q, $options: '$i'}}
     ]
   })
+  for (let i = 0; i < movies.length; i++) {
+    let movie = movies[i]
+    movie.hot_count += 1 
+    await movie.save()
+  }
   return movies
 }
 
+/**
+ * 获取热门电影
+ */
+export const getHotKey = async () => {
+  const movies = await Movie.find({}).sort({
+    'hot_count': -1
+  }).limit(10)
+  return movies
+}
 
+/**
+ * 刷新电影数据，更新isPlay
+ */
 export const refreshMovies = async (q) => {
   const movies = await Movie.find({})
   for (let i = 0; i < movies.length; i++) {
@@ -176,6 +196,9 @@ export const refreshMovies = async (q) => {
   return true
 }
 
+/**
+ * 删除剧情默认类型
+ */
 export const delMovieTypes = async () => {
   const movies = await Movie.find({})
   const cats = await Category.find({})
