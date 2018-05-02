@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const Schema = mongoose.Schema
+const { ObjectId } = Schema.Types
 const SALT_WORK_FACTOR = 10
 const MAX_LOGIN_ATTEMPTS = 5
 const LOCK_TIME = 2 * 60 * 60 * 1000
@@ -22,10 +23,16 @@ const userSchema = new Schema({
     type: String,
     default: ''
   },
+  job: String,
+  birthday: Number,
   role: {
     type: String,
     default: 'user'
   },
+  collects: [{
+    type: ObjectId,
+    ref: 'Movie'
+  }],
   lockUntil: Number,
   loginAttempts: {
     type: Number,

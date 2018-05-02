@@ -1,10 +1,9 @@
-import { request } from 'http';
-
 const R = require('ramda')
 const _ = require('lodash')
 const glob = require('glob')
 const { resolve } = require('path')
 const Router = require('koa-router')
+const multer = require('koa-multer')
 const symbolPrefix = Symbol('prefix')
 const routerMap = new Map()
 const isArray = c => _.isArray(c) ? c : [c]
@@ -130,3 +129,19 @@ export const required = rules => covert(async (ctx, next) => {
   }
   await next()
 })
+
+//配置  
+const storage = multer.diskStorage({  
+  //文件保存路径  
+  destination: function (req, file, cb) {  
+    cb(null, resolve(__dirname, '../../public'))  
+  },  
+  //修改文件名称  
+  filename: function (req, file, cb) {  
+    var fileFormat = (file.originalname).split(".");  
+    cb(null,Date.now() + "." + fileFormat[fileFormat.length - 1]);  
+  }  
+})  
+//加载配置  
+const upload = multer({ storage: storage });  
+export const uploadFile =  covert(upload.single('image'))

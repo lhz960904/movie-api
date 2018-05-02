@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
-
+const Movie = mongoose.model('Movie')
+const fs = require('fs')
+const path = require('path')
 /**
  * 用户登录, 判断密码是否正确
  * @param {String} email 邮箱
@@ -78,4 +80,51 @@ export const deleteUser = async (id) => {
   } else {
     return false
   }
+}
+
+/**
+ * 收藏电影
+ * @param {Number} id 电影id
+ */
+export const collectMovie = async (userId, movieId) => {
+  let movie
+  try {
+    movie = await Movie.findOne({_id: movieId})
+  } catch (error) {
+    return false
+  }
+  const user = await User.findOne({_id: userId})
+  if (movie && user) {
+    const idx = user.collects.indexOf(movieId)
+    if (idx === -1) {
+      user.collects.push(movieId)
+      await user.save()
+    }
+    return true
+  } else {
+    return false
+  }
+}
+
+/**
+ * 修改用户基本信息
+ * @param {Object} data 用户信息
+ */
+export const modifyUser = async (data) => {
+  const { id, email, username, password, job, headImg, birthday} = data
+  let user = await User.findOne({_id: id})
+  fs.unlinkSync(path.resolve(__dirname, `../../public/${user.headImg}`))
+  email && (user.email = email) 
+  username && (user.username = username)
+  password && (user.password = password)
+  job && (user.job = job)
+  headImg && (user.headImg = headImg)
+  birthday && (user.birthday = birthday)
+  try {
+    await user.save()
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+  return true
 }

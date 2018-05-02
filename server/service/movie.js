@@ -216,3 +216,16 @@ export const delMovieTypes = async () => {
   }
   return true
 }
+
+export const getCollectMovies = async (arr) => {
+  let movies = []
+  for (let i = 0; i < arr.length; i++) {
+    try {
+      const movie = await Movie.findOne({_id: arr[i]})
+      movies.push(movie)
+    } catch (error) {
+      
+    }
+  }
+  return movies
+}

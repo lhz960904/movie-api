@@ -88,7 +88,7 @@ export class movieController {
     }
   }
 
-  @get('/gethotkey')
+  @get('/gethotkey') //获取热门搜索
   async getHotkeys(ctx, next) {
     const movies = await getHotKey()
     ctx.body = {
