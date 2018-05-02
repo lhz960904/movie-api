@@ -113,8 +113,10 @@ export const collectMovie = async (userId, movieId) => {
 export const modifyUser = async (data) => {
   const { id, email, username, password, job, headImg, birthday} = data
   let user = await User.findOne({_id: id})
-  if (headImg){
-    fs.unlinkSync(path.resolve(__dirname, `../../public/${user.headImg}`))
+  if (headImg) {
+    if (user.headImg) {
+      fs.unlinkSync(path.resolve(__dirname, `../../public/${user.headImg}`))
+    }
     user.headImg = headImg
   }
   email && (user.email = email) 
