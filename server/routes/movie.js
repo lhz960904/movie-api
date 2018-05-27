@@ -5,7 +5,8 @@ const {
   getRelativeMovies,
   searchMovie,
   delMovieTypes,
-  getHotKey
+  getHotKey,
+  getSpecialMovies
 } = require('../service/movie')
 
 @controller('api/client/movie')
@@ -15,8 +16,8 @@ export class movieController {
     query: ['page_size', 'page']
   })
   async getAll (ctx, next) {
-    const { category, page_size, page, type } = ctx.query
-    const data = await getAllMovies(category, page_size, page, type)
+    const { page_size, page, type } = ctx.query
+    const data = await getAllMovies(page_size, page, type)
     ctx.body = {
       code: 0,
       errmsg: '',
@@ -24,6 +25,15 @@ export class movieController {
     }
   }
 
+  @get('/get_special')
+  async getSpecial (ctx) {
+    const movies = await getSpecialMovies(ctx.query)
+    ctx.body = {
+        code: 0,
+        errmsg: '',
+        data: {movies}
+      }
+  }
   @get('/get_detail/:id') // 通过id获取单条电影信息
   async getDetail (ctx, next) {
     const { id } = ctx.params

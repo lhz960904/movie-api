@@ -69,10 +69,6 @@ export const all = path => router({
   method: 'all',
   path: path
 })
-const changeToArr = R.unless(
-  R.is(isArray),
-  R.of
-)
 
 const decorate = (args, middleware) => {
   let [target, key, desc] = args

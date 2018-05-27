@@ -10,7 +10,7 @@ const rp = require('request-promise-native')
  * @param {Number} page 页码
  * @param {Number} type 1 正在上映 0 即将上映
  */
-export const getAllMovies = async (category, page_size, page, type) => {
+export const getAllMovies = async (page_size, page, type) => {
   let query = {}
   if (category) {
     query.movieTypes = {
@@ -33,6 +33,32 @@ export const getAllMovies = async (category, page_size, page, type) => {
     page_size,
     page
   }
+}
+
+/**
+ * 获取符合条件得电影数据
+ * @param {Object} params 
+ */
+export const getSpecialMovies = async (params) => {
+  const { category, type, rate } = params
+  let query = {}
+  if (type) {
+    query.isPlay = type
+  }
+  if (category) {
+    query.movieTypes = {
+      $in: [category]
+    }
+  }
+  if (rate) {
+    const rateArr = rate.split(',')
+    query.rate = {
+      $gte: rateArr[0],
+      $lte: rateArr[1]
+    }
+  }
+  const movies = await Movie.find(query)
+  return movies
 }
 
 /**

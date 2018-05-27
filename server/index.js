@@ -1,5 +1,4 @@
 const Koa = require('koa')
-const mongoose = require('mongoose')
 const { resolve } = require('path')
 const { connect, initSchemas } = require('./database/init')
 const R = require('ramda')
