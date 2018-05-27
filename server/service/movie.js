@@ -12,11 +12,6 @@ const rp = require('request-promise-native')
  */
 export const getAllMovies = async (page_size, page, type) => {
   let query = {}
-  if (category) {
-    query.movieTypes = {
-      $in: [category]
-    }
-  }
   if (type) {
     query.isPlay = type
   }
