@@ -45,7 +45,7 @@ export const getSpecialMovies = async (params) => {
       $in: [category]
     }
   }
-  if (rate) {
+  if (rate && type == 1) {
     const rateArr = rate.split(',')
     query.rate = {
       $gte: rateArr[0],
@@ -249,4 +249,9 @@ export const getCollectMovies = async (arr) => {
     }
   }
   return movies
+}
+
+export const getCategorys = async () => {
+  const arr = await Category.find({}, {_id: 1, name: 1})
+  return arr
 }

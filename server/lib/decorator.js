@@ -28,6 +28,7 @@ export class Route {
   }
 }
 
+// 格式化路径，以“/”开头
 export const normalizePath = path => path.startsWith('/') ? path : `/${path}`
 
 export const router = conf => (target, key, desc) => {

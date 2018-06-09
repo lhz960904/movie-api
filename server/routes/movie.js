@@ -6,7 +6,8 @@ const {
   searchMovie,
   delMovieTypes,
   getHotKey,
-  getSpecialMovies
+  getSpecialMovies,
+  getCategorys
 } = require('../service/movie')
 
 @controller('api/client/movie')
@@ -107,6 +108,15 @@ export class movieController {
         movies
       },
       errmsg: ''
+    }
+  }
+
+  @get('get_cats')
+  async getCategorys(ctx, next) {
+    const arr = await getCategorys()
+    ctx.body = {
+      code: 0,
+      data: arr
     }
   }
 }
