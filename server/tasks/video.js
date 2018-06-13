@@ -10,6 +10,7 @@ const Category = mongoose.model('Category')
       {video: {$exists: false}},
       {video: null},
       {casts: []},
+      {cover: {$exists: false}}
     ]
   })
   const script = resolve(__dirname, '../crawl/trailer_video')

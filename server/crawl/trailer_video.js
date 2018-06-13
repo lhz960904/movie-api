@@ -42,7 +42,7 @@ process.on('message', async movies => {
       const it = $('.related-pic-video')
       if (it && it.length > 0) {
         const link = it.attr('href')
-        const cover = it.find('img').attr('src')
+        const cover = it.css('backgroundImage').replace('url("','').replace('")','')
         return {
           link,
           images,

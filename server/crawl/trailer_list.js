@@ -39,6 +39,7 @@ const sleep = time => new Promise((resolve) => {
     })
     return data
   })
+  process.send({result})
   await page.goto(comUrl, {
     waitUntil: 'networkidle2'
   })  
@@ -52,14 +53,15 @@ const sleep = time => new Promise((resolve) => {
     })
     return arr
   })
+  result = []
   console.log(links.length)
   for (let i = 0; i < links.length; i++) {
     await page.goto(links[i], {
       waitUntil: 'networkidle2'
-    })  
+    })
     let ret = await page.evaluate(() => {
       const $ = window.$
-      var reg = new RegExp('/subject/([0-9]*)/')
+      const reg = new RegExp('/subject/([0-9]*)/')
       const doubanId = (location.href.match(reg))[1]
       const title = $('#content').find('h1 span').eq(0).text()
       const rate = 0
@@ -74,7 +76,7 @@ const sleep = time => new Promise((resolve) => {
     console.log(ret)
     result.push(ret)
   }
-  await browser.close()
   process.send({result})
+  await browser.close()
   process.exit(0)
 })()
