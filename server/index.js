@@ -1,9 +1,16 @@
+require('babel-core/register')()
+require('babel-polyfill')
 const Koa = require('koa')
 const { resolve } = require('path')
 const { connect, initSchemas } = require('./database/init')
 const R = require('ramda')
 const MIDDLEWARES = ['common', 'router']
 
+/**
+ * 载入各种Koa中间件
+ * 将MIDDLEWARES数组遍历执行require引入，执行引入对象的每个中间件
+ * @param {Koa实例对象} app 
+ */
 const useMiddlewares = (app) => {
   R.map(
     R.compose(

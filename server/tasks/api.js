@@ -70,9 +70,11 @@ async function fetchMovie(item) {
           }
         })
         movie.pubdate = pubdates
-        let compare_date = new Date(movie.pubdate[movie.pubdate.length - 1].date).getTime()
-        if (compare_date > new Date().getTime()) {
-          movie.isPlay = 0
+        if (movie.pubdate.length > 0) {
+          let compare_date = new Date(movie.pubdate[movie.pubdate.length - 1].date).getTime()
+          if (compare_date > new Date().getTime()) {
+            movie.isPlay = 0
+          }
         }
       }
       await movie.save()

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category')
-const moment = require('moment')
 const rp = require('request-promise-native')
 /**
  * 获取符合条件的电影条数
@@ -127,43 +126,6 @@ export const getTypeCount = async (type) => {
   return {
     keys,
     values
-  }
-}
-
-export const getLineData = async () => {
-  let data = []
-  const findIdx = (arr, date) => {
-    return arr.findIndex((v, k) => {
-      return v.date == date
-    })
-  }
-  const movies = await Movie.find({})
-  for (let i = 0; i < movies.length; i++) {
-    const movie = movies[i]
-    let date = movie.pubdate[movie.pubdate.length - 1].date
-    date = moment(date).format('YYYY-MM-DD')
-    let idx = findIdx(data, date)
-    if (idx == -1) {
-      data.push({
-        date,
-        value: 1
-      })
-    } else {
-      data[idx].value += 1
-    }
-  }
-  data.sort((a,b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime()
-  })
-  var dateList = data.map(function (item) {
-    return item.date;
-  });
-  var valueList = data.map(function (item) {
-    return item.value;
-  });
-  return {
-    dateList,
-    valueList
   }
 }
 
