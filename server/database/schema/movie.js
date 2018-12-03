@@ -5,61 +5,37 @@ const { ObjectId, Mixed } = Schema.Types
 const movieSchema = new Schema({
   doubanId: {
     unique: true,
-    type: String
-  },
-  rate: {
-    type: Number,
-    default: 0
-  },
-  isPlay: {
-    type: Number,
-    default: 1
+    type: Number
   },
   author: String,
   title: String,
   en_title: String,
-  poster: String,
-  posterKey: String,
   summary: String,
-  pubdate: Mixed,
-  casts: [{
-    avatar: String,
-    name: String
-  }],
-  images: [String],
+  rate: Number,
   duration: String,
-  video: String,
-  videoKey: String,
-  cover: String,
-  coverKey: String,
   movieTypes: [String],
-  hot_count: {
-    type: Number,
-    default: 0
-  },
-  category: [{
-    type: ObjectId,
-    ref: 'Category'
+  pubdate: String,
+  poster: String,
+  casts: [{
+    name: String
+    avatar: String,
   }],
-  meta: {
-    createdAt: {
-      type: Date,
-      default: Date.now()
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now()
-    }
-  }
-})
-
-movieSchema.pre('save', function (next) {
-  if (this.isNew) {
-    this.meta.createdAt = this.meta.updatedAt = Date.now()
-  } else {
-    this.meta.updatedAt = Date.now()
-  }
-  next()
+  cover: String,
+  video: String,
+  // isPlay: {
+  //   type: Number,
+  //   default: 1
+  // },
+  // images: [String],
+  // posterKey: String,
+  // videoKey: String,
+  // coverKey: String,
+  // hot_count: {
+  //   type: Number,
+  //   default: 0
+  // },
+}, {
+  timestamps: true
 })
 
 mongoose.model('Movie', movieSchema)

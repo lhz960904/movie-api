@@ -3,8 +3,10 @@ const bcrypt = require('bcryptjs')
 const Schema = mongoose.Schema
 const { ObjectId } = Schema.Types
 const SALT_WORK_FACTOR = 10
-const MAX_LOGIN_ATTEMPTS = 5
-const LOCK_TIME = 2 * 60 * 60 * 1000
+const ROLE_MAP = {
+  'user': 0,
+  'admin': 1
+}
 
 const userSchema = new Schema({
   username: {
@@ -17,47 +19,15 @@ const userSchema = new Schema({
     required: true,
   },
   password: {
-    type: String
-  },
-  headImg: {
     type: String,
-    default: ''
+    required: true
   },
-  job: String,
-  birthday: Number,
   role: {
     type: String,
-    default: 'user'
-  },
-  collects: [{
-    type: ObjectId,
-    ref: 'Movie'
-  }],
-  lockUntil: Number,
-  loginAttempts: {
-    type: Number,
-    required: true,
-    default: 0
-  },
-  meta: {
-    createdAt: {
-      type: Date,
-      default: Date.now()
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now()
-    }
+    default: ROLE_MAP['user']
   }
-})
-
-userSchema.pre('save', function (next) {
-  if (this.isNew) {
-    this.meta.createdAt = this.meta.updatedAt = Date.now()
-  } else {
-    this.meta.updatedAt = Date.now()
-  }
-  next()
+}, {
+  timestamps: true
 })
 
 userSchema.pre('save', function (next) {
@@ -72,10 +42,6 @@ userSchema.pre('save', function (next) {
   })
 })
 
-userSchema.virtual('isLocked').get(function()  {
-  return !!(this.lockUntil && this.lockUntil > Date.now())
-})
-
 userSchema.methods = {
   comparePassword: function(_password, password) {
     return new Promise((resolve, reject) => {
@@ -83,38 +49,6 @@ userSchema.methods = {
         if (!err) resolve(isMatch)
         else reject(isMatch)
       })
-    })
-  },
-  incLoginAttepts: function(user) {
-    return new Promise((resolve, reject) => {
-      if (this.lockUntil && this.lockUntil < Date.now()) {
-        this.update({
-          $set: {
-            loginAttempts: 1
-          },
-          $unset: {
-            lockUntil: 1
-          }
-        }, (err) => {
-          if (!err) resolve(isMatch)
-          else reject(isMatch)
-        })
-      } else {
-        let updates = {
-          $inc: {
-            loginAttempts: 1
-          }
-        }
-        if (this.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS && !this.isLocked) {
-          updates.$set = {
-            lockUntil: Date.now() + LOCK_TIME
-          }
-        }
-        this.update(updates, (err) => {
-          if (!err) resolve(true)
-          else reject(err)
-        })
-      }
     })
   }
 }
