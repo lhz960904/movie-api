@@ -17,23 +17,23 @@ const movieSchema = new Schema({
   pubdate: String,
   poster: String,
   casts: [{
-    name: String
-    avatar: String,
+    name: String,
+    avatar: String
   }],
   cover: String,
   video: String,
-  // isPlay: {
-  //   type: Number,
-  //   default: 1
-  // },
+  isPlay: {
+    type: Number,
+    default: 0 // 1: 上映中 0: 即将上映
+  },
+  hot_count: {
+    type: Number,
+    default: 0
+  },
   // images: [String],
   // posterKey: String,
   // videoKey: String,
   // coverKey: String,
-  // hot_count: {
-  //   type: Number,
-  //   default: 0
-  // },
 }, {
   timestamps: true
 })
