@@ -1,5 +1,4 @@
 const R = require('ramda')
-// const _ = require('lodash')
 const glob = require('glob')
 const { resolve } = require('path')
 const Router = require('koa-router')
@@ -14,11 +13,15 @@ export class Route {
     this.router = new Router()
   }
 
+  /**
+   * 加载所有路由类，遍历Map，取出配置和方法。
+   * 拼接请求路径，执行koa-router中间件
+   */
   init () {
     glob.sync(resolve(__dirname, this.apiPath, './**/*.js')).forEach(require)
     for (let [conf, controllers] of routerMap) {
       controllers = toArray(controllers)
-      const prefixPath = conf.target[symbolPrefix]
+      let prefixPath = conf.target[symbolPrefix]
       if (prefixPath) prefixPath = normalizePath(prefixPath)
       const routerPath = prefixPath + conf.path
       this.router[conf.method](routerPath, ...controllers)
@@ -30,7 +33,7 @@ export class Route {
 // 格式化路径，以“/”开头
 export const normalizePath = path => path.startsWith('/') ? path : `/${path}`
 
-// 
+// 传入method、path修饰类实例
 export const router = conf => (target, key, desc) => {
   conf.path = normalizePath(conf.path)
   routerMap.set({
@@ -39,7 +42,9 @@ export const router = conf => (target, key, desc) => {
   },target[key])
 }
 
+// 根路径，修饰路由类，将根路径挂载到原型上
 export const controller = path => target => (target.prototype[symbolPrefix] = path)
+
 
 export const get = path => router({
   method: 'get',
@@ -71,6 +76,7 @@ export const all = path => router({
   path: path
 })
 
+// 将中间件与类实例方法构成数组，在执行路由的时候，依次执行中间件
 const decorate = (args, middleware) => {
   let [target, key, desc] = args
   target[key] = toArray(target[key])
@@ -78,8 +84,10 @@ const decorate = (args, middleware) => {
   return desc
 }
 
+// 传入中间件，配合decorate构成路由中间件数组
 const covert = middleware => (...args) => decorate(args, middleware)
 
+// 必须登录查看，否则登录失效
 export const auth = covert(async (ctx, next) => {
   if (!ctx.session.user) {
     return (
@@ -92,6 +100,7 @@ export const auth = covert(async (ctx, next) => {
   await next()
 })
 
+// 判断用户身份，传入预期值，如果不匹配则代表无权限
 export const admin = roleExpected => covert(async (ctx, next) => {
   const { role } = ctx.session.user
   if (!role || role !== roleExpected) {
@@ -105,6 +114,7 @@ export const admin = roleExpected => covert(async (ctx, next) => {
   await next()
 })
 
+// 必传参数、遍历对象，过滤出未传参数
 export const required = rules => covert(async (ctx, next) => {
   let errors = []
   const checkRules = R.forEachObjIndexed(
@@ -119,7 +129,7 @@ export const required = rules => covert(async (ctx, next) => {
   if (errors.length) {
     return(
       ctx.body = {
-        code: 412,
+        code: 402,
         errmsg: `${errors.join(',')} is required`
       }
     )
