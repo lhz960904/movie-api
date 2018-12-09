@@ -4,7 +4,7 @@
   "description": "基于Koa开发的电影预告api",
   "main": "server/index.js",
   "scripts": {
-    "dev": "node server/index",
+    "dev": "nodemon server/index",
     "start": "cross-env NODE_ENV=production node server/index"
   },
   "repository": {

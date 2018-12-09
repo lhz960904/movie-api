@@ -1,12 +1,11 @@
 const R = require('ramda')
-const _ = require('lodash')
+// const _ = require('lodash')
 const glob = require('glob')
 const { resolve } = require('path')
 const Router = require('koa-router')
-const multer = require('koa-multer')
 const symbolPrefix = Symbol('prefix')
 const routerMap = new Map()
-const isArray = c => _.isArray(c) ? c : [c]
+const toArray = c => Array.isArray(c) ? c : [c]
 
 export class Route {
   constructor (app, apiPath) {
@@ -18,7 +17,7 @@ export class Route {
   init () {
     glob.sync(resolve(__dirname, this.apiPath, './**/*.js')).forEach(require)
     for (let [conf, controllers] of routerMap) {
-      controllers = isArray(controllers)
+      controllers = toArray(controllers)
       const prefixPath = conf.target[symbolPrefix]
       if (prefixPath) prefixPath = normalizePath(prefixPath)
       const routerPath = prefixPath + conf.path
@@ -31,6 +30,7 @@ export class Route {
 // 格式化路径，以“/”开头
 export const normalizePath = path => path.startsWith('/') ? path : `/${path}`
 
+// 
 export const router = conf => (target, key, desc) => {
   conf.path = normalizePath(conf.path)
   routerMap.set({
@@ -73,7 +73,7 @@ export const all = path => router({
 
 const decorate = (args, middleware) => {
   let [target, key, desc] = args
-  target[key] = isArray(target[key])
+  target[key] = toArray(target[key])
   target[key].unshift(middleware)
   return desc
 }
@@ -126,19 +126,3 @@ export const required = rules => covert(async (ctx, next) => {
   }
   await next()
 })
-
-//配置  
-const storage = multer.diskStorage({  
-  //文件保存路径  
-  destination: function (req, file, cb) {  
-    cb(null, resolve(__dirname, '../../public'))  
-  },  
-  //修改文件名称  
-  filename: function (req, file, cb) {  
-    var fileFormat = (file.originalname).split(".");  
-    cb(null,Date.now() + "." + fileFormat[fileFormat.length - 1]);  
-  }  
-})  
-//加载配置  
-const upload = multer({ storage: storage });  
-export const uploadFile =  covert(upload.single('image'))

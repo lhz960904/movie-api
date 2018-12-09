@@ -1,4 +1,5 @@
-const { get, post, put, del, controller, admin, auth, required, uploadFile } = require('../lib/decorator')
+const { get, post, put, del, controller, admin, auth, required } = require('../lib/decorator')
+// uploadFile
 const {
   checkPassword,
   getAllUsers,
@@ -43,7 +44,7 @@ export class userController {
     const { email } = ctx.request.body
     const bol = await checkUser(email)
     if (!bol) {
-      ctx.body = {
+      ctx.body = { 
         code: 0,
         errmsg: '用户不存在',
       }
@@ -134,35 +135,35 @@ export class userController {
     }
   }
 
-  @post('/modify')
-  @auth
-  @uploadFile
-  async modify (ctx, next) { 
-    const { username, job, birthday, email, password } = ctx.req.body
-    let headImg
-    if (ctx.req.file) {
-      headImg = ctx.req.file.filename
-    }
-    const res = await modifyUser({
-      id: ctx.session.user._id,
-      username,
-      job,
-      birthday,
-      email,
-      password,
-      headImg
-    })
-    if (res) {
-      ctx.body = {
-        code: 0,
-        errmsg: 'ok'
-      }
-    } else {
-      ctx.body = {
-        code: 10,
-        errmsg: '修改失败'
-      }
-    }
-  }
+  // @post('/modify')
+  // @auth
+  // @uploadFile
+  // async modify (ctx, next) { 
+  //   const { username, job, birthday, email, password } = ctx.req.body
+  //   let headImg
+  //   if (ctx.req.file) {
+  //     headImg = ctx.req.file.filename
+  //   }
+  //   const res = await modifyUser({
+  //     id: ctx.session.user._id,
+  //     username,
+  //     job,
+  //     birthday,
+  //     email,
+  //     password,
+  //     headImg
+  //   })
+  //   if (res) {
+  //     ctx.body = {
+  //       code: 0,
+  //       errmsg: 'ok'
+  //     }
+  //   } else {
+  //     ctx.body = {
+  //       code: 10,
+  //       errmsg: '修改失败'
+  //     }
+  //   }
+  // }
 }
 

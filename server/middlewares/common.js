@@ -9,8 +9,11 @@ export const addBodyParser = app => {
 
 // 打印请求日志
 export const addLogger = app => {
-  app.use(logger())
+  if (process.env.NODE_ENV !== 'production') {
+    app.use(logger())
+  }
 }
+
 
 // 设置session
 export const addSession = app => {
