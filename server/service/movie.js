@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category')
-const rp = require('request-promise-native')
+
 /**
  * 获取符合条件的电影条数
  * @param {String} category 类型
@@ -155,28 +155,6 @@ export const getHotKey = async () => {
     'hot_count': -1
   }).limit(10)
   return movies
-}
-
-/**
- * 刷新电影数据，更新isPlay
- */
-export const refreshMovies = async (q) => {
-  const movies = await Movie.find({})
-  for (let i = 0; i < movies.length; i++) {
-    let movie = movies[i]
-    let pubdate = movie.pubdate[movie.pubdate.length - 1].date
-    pubdate = new Date(pubdate).getTime()
-    const date = new Date().getTime()
-    if (date > pubdate && movie.isPlay != 1) {
-      movie.isPlay = 1
-      let url = `http://api.douban.com/v2/movie/${movie.doubanId}`
-      let res = await rp(url)
-      res = JSON.parse(res)
-      movie.rate = res.rating.average || 0
-      await movie.save()
-    }
-  }
-  return true
 }
 
 /**
