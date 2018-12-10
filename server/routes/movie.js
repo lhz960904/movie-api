@@ -1,39 +1,48 @@
-const { get, post, put, del, controller, required } = require('../lib/decorator')
+const { 
+  get, 
+  post, 
+  controller, 
+  required,
+  success 
+} = require('../lib/decorator')
+
 const {
-  getAllMovies,
+  _getHot,
+  _getMovies,
+  _getSpecialMovies,
   getMovieDetail,
   getRelativeMovies,
   searchMovie,
   delMovieTypes,
   getHotKey,
-  getSpecialMovies,
   getCategorys
 } = require('../service/movie')
 
-@controller('api/client/movie')
+@controller('/api/movie')
 export class movieController {
-  @get('/get_all') // 获取符合条件的电影条数
-  @required({
-    query: ['page_size', 'page']
-  })
-  async getAll (ctx, next) {
-    const { page_size, page, type } = ctx.query
-    const data = await getAllMovies(page_size, page, type)
-    ctx.body = {
-      code: 0,
-      errmsg: '',
-      data
-    }
+
+  @get('/get_hot') // 获取首页推荐电影
+  async getHot (ctx, next) {
+    const data = await _getHot()
+    success(ctx, data)
   }
 
-  @get('/get_special')
-  async getSpecial (ctx) {
-    const movies = await getSpecialMovies(ctx.query)
-    ctx.body = {
-        code: 0,
-        errmsg: '',
-        data: {movies}
-      }
+  @get('/get_movies') // 获取不同状态电影，可分页
+  @required({
+    'query': ['page', 'page_size', 'type']
+  })
+  async getMovies (ctx, next) {
+    const data = await _getMovies(ctx.query)
+    success(ctx, data)
+  }
+  
+  @get('/get_special_movies') // 获取筛选后的电影
+  @required({
+    'query': ['categories', 'rate', 'type']
+  })
+  async getSpecialMovies (ctx) {
+    const data = await _getSpecialMovies(ctx.query)
+    success(ctx, data)
   }
   @get('/get_detail/:id') // 通过id获取单条电影信息
   async getDetail (ctx, next) {
@@ -119,4 +128,5 @@ export class movieController {
       data: arr
     }
   }
+
 }

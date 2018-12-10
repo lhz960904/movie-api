@@ -3,56 +3,50 @@ const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category')
 
 /**
+ * 获取首页热门推荐
+ */
+export const _getHot = async () => {
+  const playing_movies = await Movie.find({ isPlay: 1 }).limit(8).sort({ rate: -1 })
+  const comming_movies = await Movie.find({ isPlay: 0 }).limit(8).sort({ rate: -1 })
+  return { playing_movies, comming_movies }
+}
+
+/**
  * 获取符合条件的电影条数
- * @param {String} category 类型
  * @param {Number} page_size 每页数量
- * @param {Number} page 页码
+ * @param {Number} page 页码 从1开始
  * @param {Number} type 1 正在上映 0 即将上映
  */
-export const getAllMovies = async (page_size, page, type) => {
-  let query = {}
-  if (type) {
-    query.isPlay = type
-  }
-  page_size = +page_size || ''
-  page = +page || ''
-  const start = page * page_size - page_size
+export const _getMovies = async ({ page_size, page, type }) => {
+  const query = { isPlay: type }
+  const skipPage = (page - 1) * page_size
   const count = await Movie.find(query).count()
-  const movies = await Movie.find(query).skip(start).limit(page_size).sort({
-    rate: -1
-  })
-  return {
-    movies,
-    count,
-    page_size,
-    page
-  }
+  const movies = await Movie.find(query).skip(skipPage).limit(+page_size).sort({ rate: -1 })
+  return { movies, count }
 }
 
 /**
  * 获取符合条件得电影数据
- * @param {Object} params 
+ * @param {Number} categories 电影种类数组
+ * @param {Number} page 页码 从1开始
+ * @param {Number} type 1 正在上映 0 即将上映
  */
-export const getSpecialMovies = async (params) => {
-  const { category, type, rate } = params
-  let query = {}
-  if (type) {
-    query.isPlay = type
-  }
-  if (category) {
-    query.movieTypes = {
-      $in: [category]
+export const _getSpecialMovies = async ({ categories, type, rate }) => {
+  let query = {
+    isPlay: type,
+    movieTypes: {
+      $in: ["剧情"]
     }
   }
-  if (rate && type == 1) {
-    const rateArr = rate.split(',')
+  rate = JSON.parse(rate)
+  if (+type === 1) {
     query.rate = {
-      $gte: rateArr[0],
-      $lte: rateArr[1]
+      $gte: rate[0],
+      $lte: rate[1]
     }
   }
   const movies = await Movie.find(query)
-  return movies
+  return { movies }
 }
 
 /**

@@ -136,3 +136,12 @@ export const required = rules => covert(async (ctx, next) => {
   }
   await next()
 })
+
+// 请求成功后返回格式
+export const success = (ctx, data) => {
+  ctx.body = {
+    code: 0,
+    errmsg: '',
+    result: data
+  }
+}
