@@ -92,7 +92,7 @@ export const auth = covert(async (ctx, next) => {
   if (!ctx.session.user) {
     return (
       ctx.body = {
-        code: 401,
+        code: 1003,
         errmsg: '登录信息失效!'
       }
     )
@@ -106,7 +106,7 @@ export const admin = roleExpected => covert(async (ctx, next) => {
   if (!role || role !== roleExpected) {
     return (
       ctx.body = {
-        code: 403,
+        code: 1004,
         errmsg: '没有权限!'
       }
     )
@@ -129,7 +129,7 @@ export const required = rules => covert(async (ctx, next) => {
   if (errors.length) {
     return(
       ctx.body = {
-        code: 402,
+        code: 1005,
         errmsg: `${errors.join(',')} is required`
       }
     )
@@ -140,8 +140,16 @@ export const required = rules => covert(async (ctx, next) => {
 // 请求成功后返回格式
 export const success = (ctx, data) => {
   ctx.body = {
-    code: 0,
+    code: 1001,
     errmsg: '',
     result: data
+  }
+}
+
+// 请求成功后返回格式
+export const error = (ctx, msg) => {
+  ctx.body = {
+    code: 1002,
+    errmsg: msg
   }
 }
