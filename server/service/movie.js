@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category')
+const Keyword = mongoose.model('Keyword')
 
 /**
  * 获取首页热门推荐
@@ -35,7 +36,7 @@ export const _getSpecialMovies = async ({ categories, type, rate }) => {
   let query = {
     isPlay: type,
     movieTypes: {
-      $in: ["剧情"]
+      $in: JSON.parse(categories)
     }
   }
   rate = JSON.parse(rate)
@@ -50,142 +51,59 @@ export const _getSpecialMovies = async ({ categories, type, rate }) => {
 }
 
 /**
- * 通过id获取单条电影信息
- * @param {String} id 电影id
+ * 获取榜单电影、只展示前10条
  */
-export const getMovieDetail = async (id) => {
-  try {
-    let movie = await Movie.findOne({_id: id})
-    movie.hot_count += 1 
-    console.log(movie.hot_count)
-    await movie.save()
-    return movie
-  } catch (error) {
-    return ''
-  }
-}
-
-/**
- * 通过id获取与该电影相似的条目信息
- * @param {String} id 电影id
- */
-export const getRelativeMovies = async (id) => {
-  try {
-    const movie = await Movie.findOne({ _id: id })
-    const movies = await Movie.find({
-      movieTypes: {
-        $in: movie.movieTypes
-      }
-    })
-    return movies.slice(0, 6)
-  } catch (error) {
-    return {}
-  }
-}
-
-/**
- * 删除电影
- * @param {String} id 电影id
- */
-export const deleteMoive = async (id) => {
-  const movie = await Movie.findOne({ _id: id })
-  if (movie) {
-    try {
-      await movie.remove()
-      return true
-    } catch (error) {
-      return false
-    }
-  } else {
-    return false
-  }
-}
-
-/**
- * 获取指定类型的电影条目数量
- * @param {String} type 电影类型
- */
-export const getTypeCount = async (type) => {
-  let keys = []
-  let values = []
-  const cats = await Category.find({})
-  for (let i = 0; i < cats.length; i++) {
-    const item = cats[i]
-    keys.push(item.name)
-    values.push({
-      value: item.movies.length,
-      name: item.name
-    })
-  }
-  return {
-    keys,
-    values
-  }
+export const _getRank = async () => {
+  const movies = await Movie.find({}).sort({ viewCount: -1 }).limit(10)
+  return { movies }
 }
 
 /**
  * 搜索电影
- * @param {String} q 关键字
+ * @param {String} keyword 关键字
  */
-export const searchMovie = async (q) => {
+export const _searchMovie = async ({ keyword }) => {
+  let key = await Keyword.findOne({
+    name: keyword
+  })
+  if (key) {
+    key.count += 1
+  } else {
+    key = new Keyword({
+      name: keyword,
+      count: 1
+    })
+  }
+  await key.save()
+  
   const movies = await Movie.find({
     $or: [
-      { title: { '$regex': q, $options: '$i'}}
+      { title: { '$regex': keyword, $options: '$i' } }
     ]
-  })
-  for (let i = 0; i < movies.length; i++) {
-    let movie = movies[i]
-    movie.hot_count += 1 
-    await movie.save()
-  }
-  return movies
+  }).sort({ viewCount: -1 })
+  return { movies }
 }
 
 /**
- * 获取热门电影
+ * 获取最热搜索
  */
-export const getHotKey = async () => {
-  const movies = await Movie.find({}).sort({
-    'hot_count': -1
-  }).limit(10)
-  return movies
+export const _getHotSearch = async () => {
+  const keywords = await Keyword.find({}, 'name count').sort({ 'count': -1 }).limit(10)
+  return { keywords }
 }
 
 /**
- * 删除剧情默认类型
+ * 通过id获取单条电影信息
+ * @param {String} id 电影id
  */
-export const delMovieTypes = async () => {
-  const movies = await Movie.find({})
-  const cats = await Category.find({})
-  let idx = cats.findIndex((item) => {
-    return item.name == '剧情'
-  })
-  await cats[idx].remove()
-  for (let i = 0; i < movies.length; i++) {
-    let movie = movies[i]
-    let index = movie.movieTypes.indexOf('剧情')
-    if (index > -1) {
-      movie.movieTypes.splice(index, 1)
+export const _getMovieDetail = async ({ id }) => {
+  let movie = await Movie.findOne({_id: id})
+  movie.viewCount += 1
+  await movie.save()
+  const relative_movies = await Movie.find({
+    movieTypes: {
+      $in: movie.movieTypes
     }
-    await movie.save()
-  }
-  return true
-}
-
-export const getCollectMovies = async (arr) => {
-  let movies = []
-  for (let i = 0; i < arr.length; i++) {
-    try {
-      const movie = await Movie.findOne({_id: arr[i]})
-      movies.push(movie)
-    } catch (error) {
-      
-    }
-  }
-  return movies
-}
-
-export const getCategorys = async () => {
-  const arr = await Category.find({}, {_id: 1, name: 1})
-  return arr
+  }).sort({ rate: -1 }).limit(6)
+  return { movie, relative_movies }
 }

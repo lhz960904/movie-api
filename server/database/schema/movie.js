@@ -9,7 +9,7 @@ const movieSchema = new Schema({
   },
   author: String,
   title: String,
-  en_title: String,
+  enTitle: String,
   summary: String,
   rate: Number,
   duration: String,
@@ -26,7 +26,7 @@ const movieSchema = new Schema({
     type: Number,
     default: 0 // 1: 上映中 0: 即将上映
   },
-  hot_count: {
+  viewCount: {
     type: Number,
     default: 0
   },

@@ -1,6 +1,5 @@
 const { 
   get, 
-  post, 
   controller, 
   required,
   success 
@@ -10,12 +9,10 @@ const {
   _getHot,
   _getMovies,
   _getSpecialMovies,
-  getMovieDetail,
-  getRelativeMovies,
-  searchMovie,
-  delMovieTypes,
-  getHotKey,
-  getCategorys
+  _getRank,
+  _searchMovie,
+  _getHotSearch,
+  _getMovieDetail,
 } = require('../service/movie')
 
 @controller('/api/movie')
@@ -44,89 +41,32 @@ export class movieController {
     const data = await _getSpecialMovies(ctx.query)
     success(ctx, data)
   }
-  @get('/get_detail/:id') // 通过id获取单条电影信息
-  async getDetail (ctx, next) {
-    const { id } = ctx.params
-    const movie = await getMovieDetail(id)
-    if (!movie) {
-      ctx.body = {
-        code: 3,
-        errmsg: '',
-        data: {}
-      }
-    } else {
-      ctx.body = {
-        code: 0,
-        errmsg: '',
-        data: {
-          movie
-        }
-      }
-    }
-  }
 
-  @get('/get_relative/:id') // 通过id获取与该电影相似的条目信息
-  async getRelative (ctx, next) {
-    const { id } = ctx.params
-    const movies = await getRelativeMovies(id)
-    ctx.body = {
-      code: 0,
-      errmsg: '',
-      data: {
-        movies
-      }
-    }
+  @get('/get_rank') //获取榜单电影
+  async getRank(ctx, next) {
+    const data = await _getRank()
+    success(ctx, data)
   }
 
   @get('/search') // 搜索电影
   @required({
-    query: ['q']
+    query: ['keyword']
   })
   async searchMovie(ctx, next) {
-    const { q } = ctx.query
-    const movies = await searchMovie(q)
-    ctx.body = {
-      code: 0,
-      errmsg: '',
-      data: {
-        movies
-      }
-    }
+    const data = await _searchMovie(ctx.query)
+    success(ctx, data)
   }
 
-  @get('/deltypes') // 删除电影类型
-  async delType(ctx, next) {
-    const res = await delMovieTypes()
-    if (res) {
-      ctx.body = {
-        code: 0
-      }
-    } else {
-      ctx.body = {
-        code: 3
-      }
-    }
+  @get('/get_hot_search') // 获取热门搜索词
+  async getHotSearch(ctx, next) {
+    const data = await _getHotSearch(ctx.query)
+    success(ctx, data)
   }
 
-  @get('/gethotkey') //获取热门搜索
-  async getHotkeys(ctx, next) {
-    const movies = await getHotKey()
-    ctx.body = {
-      code: 0,
-      data: {
-        movies
-      },
-      errmsg: ''
-    }
-  }
-
-  @get('get_cats')
-  async getCategorys(ctx, next) {
-    const arr = await getCategorys()
-    ctx.body = {
-      code: 0,
-      data: arr
-    }
+  @get('/get_detail/:id') // 通过id获取电影详情
+  async getMovieDetail (ctx, next) {
+    const data = await _getMovieDetail(ctx.params)
+    success(ctx, data)
   }
 
 }
