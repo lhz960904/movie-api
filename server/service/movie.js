@@ -104,10 +104,10 @@ export const _getMovieDetail = async ({ id }) => {
   let movie = await Movie.findOne({_id: id})
   movie.viewCount += 1
   await movie.save()
-  const relative_movies = await Movie.find({
+  const relativeMovies = await Movie.find({
     movieTypes: {
       $in: movie.movieTypes
     }
   }).sort({ rate: -1 }).limit(6)
-  return { movie, relative_movies }
+  return { movie, relativeMovies }
 }
