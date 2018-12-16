@@ -20,8 +20,17 @@ export class movieController {
 
   @get('/get_hot') // 获取首页推荐电影
   async getHot (ctx, next) {
-    const data = await _getHot()
-    success(ctx, data)
+    const { playingMovies, commingMovies, playingCount, commingCount } = await _getHot()
+    success(ctx, {
+      comming: {
+        count: commingCount,
+        movies: commingMovies
+      },
+      playing: {
+        count: playingCount,
+        movies: playingMovies
+      }
+    })
   }
 
   @get('/get_movies') // 获取不同状态电影，可分页

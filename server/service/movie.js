@@ -7,9 +7,13 @@ const Keyword = mongoose.model('Keyword')
  * 获取首页热门推荐
  */
 export const _getHot = async () => {
-  const playing_movies = await Movie.find({ isPlay: 1 }).limit(8).sort({ rate: -1 })
-  const comming_movies = await Movie.find({ isPlay: 0 }).limit(8).sort({ rate: -1 })
-  return { playing_movies, comming_movies }
+  const playingCount = await Movie.find({ isPlay: 1 }).count()
+  const playingMovies = await Movie.find({ isPlay: 1 }).limit(8).sort({ rate: -1 })
+
+  const commingCount = await Movie.find({ isPlay: 0 }).count()
+  const commingMovies = await Movie.find({ isPlay: 0 }).limit(8).sort({ rate: -1 })
+  
+  return { playingMovies, commingMovies, playingCount, commingCount }
 }
 
 /**
