@@ -9,7 +9,6 @@ const movieSchema = new Schema({
   },
   author: String,
   title: String,
-  enTitle: String,
   summary: String,
   rate: Number,
   duration: String,

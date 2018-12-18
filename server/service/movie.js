@@ -11,7 +11,7 @@ export const _getHot = async () => {
   const playingMovies = await Movie.find({ isPlay: 1 }).limit(8).sort({ rate: -1 })
 
   const commingCount = await Movie.find({ isPlay: 0 }).count()
-  const commingMovies = await Movie.find({ isPlay: 0 }).limit(8).sort({ rate: -1 })
+  const commingMovies = await Movie.find({ isPlay: 0 }).limit(8)
   
   return { playingMovies, commingMovies, playingCount, commingCount }
 }
@@ -26,7 +26,13 @@ export const _getMovies = async ({ page_size, page, type }) => {
   const query = { isPlay: type }
   const skipPage = (page - 1) * page_size
   const count = await Movie.find(query).count()
-  const movies = await Movie.find(query).skip(skipPage).limit(+page_size).sort({ rate: -1 })
+  // 如果type 为 0 不需要按照评分排序
+  let movies = []
+  if (+type === 1) {
+    movies = await Movie.find(query).skip(skipPage).limit(+page_size).sort({ rate: -1 })
+  } else {
+    movies = await Movie.find(query).skip(skipPage).limit(+page_size)
+  }
   return { movies, count }
 }
 
