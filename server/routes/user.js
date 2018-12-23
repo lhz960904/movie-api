@@ -29,19 +29,6 @@ export class userController {
       error(ctx, '账号或密码不正确')
     }
   }
-  
-  @post('/check_email') //判断email是否存在
-  @required({
-    body: ['email']
-  })
-  async checkEmail (ctx, next) {
-    const bool = await _checkEmail(ctx.request.body)
-    if (!bool) {
-      success(ctx)
-    } else {
-      error(ctx, '邮箱已经被注册')
-    }
-  }
 
   @post('/register') // 注册用户
   @required({
@@ -50,13 +37,17 @@ export class userController {
   async registerUser (ctx, next) {
     const { email, password } = ctx.request.body
     const pattern = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/
-    console.log(password, pattern.test(password))
     if (!pattern.test(email)) {
       error(ctx, '邮箱格式不正确')
       return
     }
     if (password.length < 6) {
       error(ctx, '密码长度小于6位')
+      return
+    }
+    const bool = await _checkEmail(ctx.request.body)
+    if (bool) {
+      error(ctx, '邮箱已经被注册')
       return
     }
     const data = await _registerUser(ctx.request.body)
@@ -67,15 +58,6 @@ export class userController {
   async logout (ctx, next) {
     ctx.session.user = undefined;
     success(ctx)
-  }
-
-  @get('/get_userinfo') //获取用户信息
-  async getInfo (ctx, next) {
-    if (ctx.session.user) {
-      success(ctx, ctx.session.user)
-    } else {
-      error(ctx, '用户未登录')
-    }
   }
 
 }
