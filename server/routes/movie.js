@@ -2,6 +2,7 @@ const {
   get, 
   controller, 
   required,
+  auth,
   success 
 } = require('../lib/decorator')
 
@@ -13,6 +14,8 @@ const {
   _searchMovie,
   _getHotSearch,
   _getMovieDetail,
+  _collectMovie,
+  _getCollects
 } = require('../service/movie')
 
 @controller('/api/movie')
@@ -75,6 +78,23 @@ export class movieController {
   @get('/get_detail/:id') // 通过id获取电影详情
   async getMovieDetail (ctx, next) {
     const data = await _getMovieDetail(ctx.params)
+    success(ctx, data)
+  }
+
+  @get('/collect/:id') // 收藏或取消收藏电影
+  @auth
+  @required({
+    params: ['id']
+  })
+  async collectMovie (ctx, next) {
+    const bool = await _collectMovie(ctx.session.user._id, ctx.params.id)
+    bool ? success(ctx, '操作成功') : error(ctx, '操作失败')
+  }
+
+  @get('/get_collects')
+  @auth
+  async getCollects(ctx, next) {
+    const data = await _getCollects(ctx.session.user._id)
     success(ctx, data)
   }
 

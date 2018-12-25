@@ -22,6 +22,10 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  collects: [{
+    type: ObjectId,
+    ref: 'Movie'
+  }],
   role: {
     type: String,
     default: ROLE_MAP['user']

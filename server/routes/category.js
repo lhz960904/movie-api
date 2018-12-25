@@ -12,7 +12,7 @@ const {
 export class categoryController {
 
   @get('get_cates')
-  async _getCategorys(ctx, next) {
+  async getCategorys(ctx, next) {
     const data = await _getCategorys()
     success(ctx, data)
   }

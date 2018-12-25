@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Movie = mongoose.model('Movie')
 const Category = mongoose.model('Category')
+const User = mongoose.model('User')
 const Keyword = mongoose.model('Keyword')
 
 /**
@@ -116,4 +117,25 @@ export const _getMovieDetail = async ({ id }) => {
     }
   }).sort({ rate: -1 }).limit(6)
   return { movie, relativeMovies }
+}
+
+export const _collectMovie = async (userId, movieId) => {
+  const user = await User.findOne({ _id: userId })
+  const idx = user.collects.indexOf(movieId)
+  if (idx > -1) {
+    user.collects.splice(idx, 1)
+  } else {
+    user.collects.push(movieId)
+  }
+  try {
+    await user.save()
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
+export const _getCollects = async (userId) => {
+  const movies = await User.findOne({ _id: userId }, 'collects').populate('collects')
+  return { movies: movies.collects }
 }
