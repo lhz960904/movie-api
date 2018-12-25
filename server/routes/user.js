@@ -12,7 +12,8 @@ const {
   _login,
   _checkEmail,
   _registerUser,
-  _getCollects
+  _getCollects,
+  _getUserInfo
 } = require('../service/user')
 
 @controller('/api/user')
@@ -63,10 +64,17 @@ export class userController {
 
   @get('/get_collects') // 查看收藏
   @auth
-  async getCollects(ctx, next) {
+  async getCollects (ctx, next) {
     const data = await _getCollects(ctx.session.user._id)
     success(ctx, data)
   }
+
+  @get('/get_info') // 获取用户信息
+  @auth
+  async getUserInfo (ctx, next) {
+    const data = await _getUserInfo(ctx.session.user)
+    success(ctx, data) 
+  } 
 
 }
 

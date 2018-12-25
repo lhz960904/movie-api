@@ -125,7 +125,7 @@ export const _collectMovie = async (userId, movieId) => {
   if (idx > -1) {
     user.collects.splice(idx, 1)
   } else {
-    user.collects.push(movieId)
+    user.collects = user.collects.concat(movieId)
   }
   try {
     await user.save()

@@ -50,3 +50,9 @@ export const _getCollects = async (userId) => {
   const movies = await User.findOne({ _id: userId }, 'collects').populate('collects')
   return { movies: movies.collects }
 }
+
+
+export const _getUserInfo = async ({ _id }) => {
+  const user = await User.findById(_id)
+  return user
+}
