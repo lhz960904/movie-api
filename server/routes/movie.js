@@ -14,8 +14,7 @@ const {
   _searchMovie,
   _getHotSearch,
   _getMovieDetail,
-  _collectMovie,
-  _getCollects
+  _collectMovie
 } = require('../service/movie')
 
 @controller('/api/movie')
@@ -89,13 +88,6 @@ export class movieController {
   async collectMovie (ctx, next) {
     const bool = await _collectMovie(ctx.session.user._id, ctx.params.id)
     bool ? success(ctx, '操作成功') : error(ctx, '操作失败')
-  }
-
-  @get('/get_collects')
-  @auth
-  async getCollects(ctx, next) {
-    const data = await _getCollects(ctx.session.user._id)
-    success(ctx, data)
   }
 
 }

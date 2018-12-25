@@ -42,3 +42,11 @@ export const _registerUser = async ({ username, email, password }) => {
   await user.save()
   return { user }
 }
+
+/**
+ * 查看用户收藏列表
+ */
+export const _getCollects = async (userId) => {
+  const movies = await User.findOne({ _id: userId }, 'collects').populate('collects')
+  return { movies: movies.collects }
+}
