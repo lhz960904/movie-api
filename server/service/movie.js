@@ -44,14 +44,21 @@ export const _getMovies = async ({ page_size, page, type }) => {
  * @param {Number} type 1 正在上映 0 即将上映
  */
 export const _getSpecialMovies = async ({ categories, type, rate }) => {
-  let query = {
-    isPlay: type,
-    movieTypes: {
-      $in: JSON.parse(categories)
+  const query = {}
+
+  if (type) {
+    query.isPlay = type
+  }
+
+  categories = JSON.parse(categories)
+  if (categories.length > 0) {
+    query.movieTypes = {
+      $in: categories
     }
   }
-  rate = JSON.parse(rate)
-  if (+type === 1) {
+  if (!type || +type === 1) {
+    console.log('haha')
+    rate = JSON.parse(rate)
     query.rate = {
       $gte: rate[0],
       $lte: rate[1]
