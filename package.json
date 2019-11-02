@@ -30,7 +30,7 @@
     "koa-static": "^4.0.2",
     "koa-views": "^6.1.4",
     "lodash": "^4.17.5",
-    "mongoose": "^5.0.11",
+    "mongoose": "^5.7.5",
     "ramda": "^0.25.0"
   },
   "devDependencies": {
