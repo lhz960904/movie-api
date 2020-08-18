@@ -18,7 +18,7 @@ class MovieService extends Service {
     if (keyword) {
       sql += ` and title like ${escape(`%${keyword}%`)}`
     }
-    console.log(sql)
+    // console.log(sql)
 
     let result = await this.app.mysql.query(sql);
     result = await this.normalize(result);
@@ -66,6 +66,11 @@ class MovieService extends Service {
       where: { id },
     })
     return movie[0]
+  }
+
+  async update(row) {
+    const result = await this.app.mysql.update('movie', row);
+    return result.affectedRows === 1;
   }
 
   async selectByCondition(options = {}) {

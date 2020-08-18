@@ -40,6 +40,7 @@ class MovieController extends Controller {
     const { ctx, service } = this;
     const result = await service.movie.getDetail(ctx.params.id);
     if (result) {
+      await service.movie.update({ id: result.id, viewCount: result.viewCount + 1 })
       ctx.sendSuccess(result)
     } else {
       ctx.sendError('未查找到对应电影！')
