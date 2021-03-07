@@ -68,7 +68,7 @@ class MovieController extends Controller {
   }
 
   _getSimilarity(moive, types) {
-    return moive.movieTypes.reduce((a, c) => types.includes(c.id) ? a + 1 : a, 0)
+    return moive.movieTypes.filter(_ => _).reduce((a, c) => types.includes(c.id) ? a + 1 : a, 0)
   }
 
 }
