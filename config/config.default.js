@@ -32,7 +32,13 @@ module.exports = appInfo => {
     csrf: {
       enable: false,
     },
+    domainWhiteList: [ 'www.vip.sc' ],
   };
+
+  config.cors = {
+    enable: true,
+    package: 'egg-cors',
+  }
 
   // add your user config here
   const userConfig = {

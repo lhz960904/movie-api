@@ -10,6 +10,7 @@
     "bcryptjs": "^2.4.3",
     "cheerio": "^1.0.0-rc.3",
     "egg": "^2.15.1",
+    "egg-cors": "^2.2.3",
     "egg-mysql": "^3.0.0",
     "egg-scripts": "^2.11.0",
     "superagent": "^5.3.1"
