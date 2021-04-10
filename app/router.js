@@ -22,7 +22,7 @@ module.exports = app => {
   router.get('/api/user/getInfo', controller.user.getInfo);
   
   // 手动执行任务
-  router.get('/task/crawler', () => {
+  router.get('/api/task/crawler', () => {
     app.runSchedule('./crawler.js')
   });
 };
