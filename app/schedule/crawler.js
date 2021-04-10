@@ -89,6 +89,10 @@ class CrawlingDouban extends Subscription {
 
   // 插入数据库
   async insertDataBase(movie) {
+    // fix: 没有video过滤掉
+    if (!movie.video) {
+      return;
+    }
     // 1.获取电影分类的id，分类不存在创建
     const categoryIds = await Promise.all(
       movie.categories.map(name => {
