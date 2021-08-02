@@ -20,7 +20,7 @@ module.exports = appInfo => {
       // port
       port: '3306',
       // username
-      user: 'root',
+      user: 'lihaoze',
       // password
       password: '549888',
       // database
